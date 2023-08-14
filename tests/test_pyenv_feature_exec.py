@@ -115,9 +115,9 @@ def test_path_not_updated(pyenv_path, local_path, env, run):
     tmp_bat = str(Path(local_path, "tmp.bat"))
     with open(tmp_bat, "w") as f:
         # must chain commands because env var is lost when cmd ends
-        print(f'@echo %PATH%', file=f)
+        print('@echo %PATH%', file=f)
         print(f'@call "{python}" -V>nul', file=f)
-        print(f'@echo %PATH%', file=f)
+        print('@echo %PATH%', file=f)
     stdout, stderr = run("call", tmp_bat, env=env)
     path = os.environ['PATH']
     assert (stdout, stderr) == (f"{path}\r\n{path}", "")
