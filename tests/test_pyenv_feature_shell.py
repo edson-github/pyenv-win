@@ -41,7 +41,7 @@ def test_shell_version_defined(pyenv):
 @pytest.mark.parametrize('settings', [lambda: {'versions': [Native("3.7.7"), Native("3.8.9")]}])
 def test_shell_set_installed_version(local_path, shell, shell_ext, run):
     env = {"PYENV_VERSION": Native("3.8.9")}
-    tmp_bat = str(Path(local_path, "tmp" + shell_ext))
+    tmp_bat = str(Path(local_path, f"tmp{shell_ext}"))
     with open(tmp_bat, "w") as f:
         # must chain commands because env var is lost when cmd ends
         if shell == 'cmd':
@@ -65,21 +65,24 @@ def test_shell_set_unknown_version(pyenv):
     }])
 def test_shell_unset_unaffected(local_path, shell, shell_ext, run):
     env = {"PYENV_VERSION": Native("3.8.9")}
-    tmp_bat = str(Path(local_path, "tmp" + shell_ext))
+    tmp_bat = str(Path(local_path, f"tmp{shell_ext}"))
     with open(tmp_bat, "w") as f:
         # must chain commands because env var is lost when cmd ends
         if shell == 'cmd':
-            print(f'@call pyenv global --unset && call pyenv local --unset && call pyenv shell', file=f)
+            print(
+                '@call pyenv global --unset && call pyenv local --unset && call pyenv shell',
+                file=f,
+            )
         if shell in ['powershell', 'pwsh']:
             tmp_bat = tmp_bat.replace(' ', '` ')
-            print(f'pyenv global --unset; pyenv local --unset; pyenv shell', file=f)
+            print('pyenv global --unset; pyenv local --unset; pyenv shell', file=f)
     stdout, stderr = run(tmp_bat, env=env)
     assert (stdout, stderr) == (Native("3.8.9"), "")
 
 
 @pytest.mark.parametrize('settings', [lambda: {'versions': [Native("3.7.7"), Native("3.8.9")]}])
 def test_shell_set_many_versions(local_path, shell, shell_ext, run):
-    tmp_bat = str(Path(local_path, "tmp" + shell_ext))
+    tmp_bat = str(Path(local_path, f"tmp{shell_ext}"))
     with open(tmp_bat, "w") as f:
         # must chain commands because env var is lost when cmd ends
         if shell == 'cmd':

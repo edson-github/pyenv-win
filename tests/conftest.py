@@ -49,7 +49,7 @@ def shims_path(pyenv_path):
 
 @pytest.fixture()
 def pyenv_file(shell, bin_path, shell_ext):
-    pyenv_file = str(Path(bin_path, 'pyenv' + shell_ext))
+    pyenv_file = str(Path(bin_path, f'pyenv{shell_ext}'))
     if shell in ['powershell', 'pwsh']:
         pyenv_file = pyenv_file.replace(' ', '` ')
     return pyenv_file
@@ -109,9 +109,10 @@ def run(run_args, pyenv_path, bin_path, shims_path):
         path = Path(path)
         if path.joinpath("python.exe").exists():
             return False
-        if path.parent.name.lower() == "scripts" and path.parent.joinpath("python.exe").exists():
-            return False
-        return True
+        return (
+            path.parent.name.lower() != "scripts"
+            or not path.parent.joinpath("python.exe").exists()
+        )
 
     environ["PATH"] = os.pathsep.join(filter(remove_python_paths, environ["PATH"].split(os.pathsep)))
     environ.pop("VIRTUAL_ENV", None)
